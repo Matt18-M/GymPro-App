@@ -5,12 +5,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import DrawerNavigator from './src/navigators/DrawerNavigator';
 import ChestDetailScreen from './src/screens/ChestDetailScreen';
+import AddRoutineScreen from './src/screens/AddRoutineScreen';
 import { RoutineProvider } from './src/context/RoutineContext';
 import { colors } from './src/theme';
 
 export type RootStackParamList = {
   DrawerRoot: undefined;
   ChestDetail: undefined;
+  AddRoutine: { routineId?: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +33,11 @@ export default function App() {
             name="ChestDetail"
             component={ChestDetailScreen}
             options={chestDetailOptions}
+          />
+          <Stack.Screen
+            name="AddRoutine"
+            component={AddRoutineScreen}
+            options={addRoutineOptions}
           />
         </Stack.Navigator>
       </NavigationContainer>
@@ -57,6 +64,18 @@ const drawerRootOptions = {
 
 const chestDetailOptions = {
   title: 'Rutina de Pecho',
+  headerStyle: {
+    backgroundColor: colors.surface,
+  },
+  headerTintColor: colors.primary,
+  headerTitleStyle: {
+    fontWeight: '700' as const,
+    color: colors.text,
+  },
+};
+
+const addRoutineOptions = {
+  title: 'Rutina',
   headerStyle: {
     backgroundColor: colors.surface,
   },

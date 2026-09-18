@@ -35,7 +35,7 @@ export default function RoutineListScreen() {
 
         <Pressable
           style={styles.iconBtn}
-          onPress={() => Alert.alert('Editar', item.name)}
+          onPress={() => navigation.navigate('AddRoutine', { routineId: item.id })}
         >
           <Ionicons name="pencil-outline" size={22} color={colors.primary} />
         </Pressable>
@@ -60,7 +60,7 @@ export default function RoutineListScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
-          onPress={() => Alert.alert('Nueva Rutina')}
+          onPress={() => navigation.navigate('AddRoutine', {})}
         >
           <Ionicons name="add-circle-outline" size={22} color={colors.background} />
           <Text style={styles.fabText}>Nueva Rutina</Text>
