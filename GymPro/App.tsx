@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import DrawerNavigator from './src/navigators/DrawerNavigator';
 import ChestDetailScreen from './src/screens/ChestDetailScreen';
+import { RoutineProvider } from './src/context/RoutineContext';
 import { colors } from './src/theme';
 
 export type RootStackParamList = {
@@ -16,21 +17,24 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer theme={navTheme}>
-      <StatusBar style="light" />
-      <Stack.Navigator>
-        <Stack.Screen
-          name="DrawerRoot"
-          component={DrawerNavigator}
-          options={drawerRootOptions}
-        />
-        <Stack.Screen
-          name="ChestDetail"
-          component={ChestDetailScreen}
-          options={chestDetailOptions}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <RoutineProvider>
+      <NavigationContainer theme={navTheme}>
+        <StatusBar style="light" />
+
+        <Stack.Navigator>
+          <Stack.Screen
+            name="DrawerRoot"
+            component={DrawerNavigator}
+            options={drawerRootOptions}
+          />
+          <Stack.Screen
+            name="ChestDetail"
+            component={ChestDetailScreen}
+            options={chestDetailOptions}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </RoutineProvider>
   );
 }
 
@@ -47,7 +51,8 @@ const navTheme = {
 };
 
 const drawerRootOptions = {
-  headerShown: false as const,
+  headerShown: true as const,
+  title: "Mateo Molina"
 };
 
 const chestDetailOptions = {

@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../App';
 import { colors } from '../theme';
@@ -21,6 +21,14 @@ export default function RoutineListScreen() {
         >
           <Text style={styles.buttonText}>Ver Rutina de Pecho</Text>
         </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+          onPress={() => Alert.alert("Rutina de Pecho")}
+        >
+          <Text style={styles.buttonText}>Comenzar Rutina</Text>
+        </Pressable>          
+
       </View>
     </SafeAreaView>
   );
