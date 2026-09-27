@@ -38,30 +38,35 @@ export default function AddRoutineScreen() {
 
     const handleSave = () => {
         if (!name.trim() || !muscleGroup.trim() || !duration.trim()) {
-        Alert.alert('Campos incompletos', 'Por favor completa todos los campos');
+        Alert.alert('Campos incompletos', 'Nombre, grupo muscular y duración son obligatorios');
         return;
         }
 
-    const parsedDuration = parseFloat(duration);
-    if (isNaN(parsedDuration) || parsedDuration <= 0) {
-        Alert.alert('Duración inválida', 'Ingresa un número mayor a 0');
+        const parsedDuration = parseFloat(duration);
+        if (isNaN(parsedDuration)) {
+        Alert.alert('Duración inválida', 'Ingresa un número válido');
         return;
         }
 
-    const payload = {
+        if (parsedDuration < 10 || parsedDuration > 180) {
+        Alert.alert('Duración fuera de rango', 'La duración debe estar entre 10 y 180 minutos');
+        return;
+        }
+
+        const payload = {
         name: name.trim(),
         muscleGroup: muscleGroup.trim(),
         duration: String(parsedDuration),
         };
 
-    if (idToEdit) {
+        if (idToEdit) {
         updateRoutine(idToEdit, payload);
-    } else {
+        } else {
         addRoutine(payload);
-    }
+        }
 
-    navigation.goBack();
-};
+        navigation.goBack();
+    };
 
 return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
