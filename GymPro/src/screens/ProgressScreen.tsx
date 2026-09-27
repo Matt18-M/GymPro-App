@@ -10,7 +10,27 @@ export default function ProgressScreen() {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const { routines } = useRoutines();
 
-    const totalCompletadas = routines.reduce((acc, r) => acc + r.completedCount, 0);
+    const totalRutinas = routines.length;
+    const duracionTotal = routines.reduce((acc, r) => acc + r.duration, 0);
+    const duracionPromedio = totalRutinas > 0 ? Math.round(duracionTotal / totalRutinas) : 0;
+
+    const grupoTop = (() => {
+      const counts: Record<string, number> = {};
+      routines.forEach((r) => {
+        counts[r.muscleGroup] = (counts[r.muscleGroup] || 0) + 1;
+      });
+      let top = '—';
+      let max = 0;
+      Object.entries(counts).forEach(([group, count]) => {
+        if (count > max) {
+          max = count;
+          top = group;
+        }
+      });
+      return top;
+    })();
+
+    const featuredRoutine = routines.find((r) => r.featured);
 
     const renderItem = ({ item }: { item: Routine }) => {
       const progress = Math.min(item.completedCount / COMPLETED_LIMIT, 1);
@@ -27,7 +47,7 @@ export default function ProgressScreen() {
               <Text style={styles.cardSubtitle}>{item.muscleGroup}</Text>
             </View>
             <Ionicons
-              name={isComplete ? 'trophy-outline' : 'barbell-outline'}
+              name={item.featured ? 'star' : isComplete ? 'trophy-outline' : 'barbell-outline'}
               size={24}
               color={colors.primary}
             />
@@ -48,8 +68,34 @@ export default function ProgressScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['bottom']}>
         <View style={styles.container}>
-          <Text style={styles.totalTitle}>Total completadas</Text>
-          <Text style={styles.totalNumber}>{totalCompletadas}</Text>
+          <View style={styles.summaryGrid}>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Total rutinas</Text>
+              <Text style={styles.summaryValue}>{totalRutinas}</Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Duración total</Text>
+              <Text style={styles.summaryValue}>{duracionTotal} min</Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Duración promedio</Text>
+              <Text style={styles.summaryValue}>{duracionPromedio} min</Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Grupo top</Text>
+              <Text style={styles.summaryValue}>{grupoTop}</Text>
+            </View>
+          </View>
+
+          {featuredRoutine && (
+            <View style={styles.featuredCard}>
+              <Ionicons name="star" size={20} color={colors.background} />
+              <View>
+                <Text style={styles.featuredLabel}>Rutina destacada</Text>
+                <Text style={styles.featuredName}>{featuredRoutine.name}</Text>
+              </View>
+            </View>
+          )}
 
           <FlatList
             data={routines}
@@ -64,29 +110,31 @@ export default function ProgressScreen() {
   }
 
   const styles = StyleSheet.create({
-    safe: {
-      flex: 1,
-      backgroundColor: colors.background,
+    safe: { flex: 1, backgroundColor: colors.background },
+    container: { flex: 1, padding: 16 },
+    summaryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
+    summaryCard: {
+      flexBasis: '47%',
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
-    container: {
-      flex: 1,
-      padding: 16,
+    summaryLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
+    summaryValue: { color: colors.primary, fontSize: 24, fontWeight: '800', marginTop: 4 },
+    featuredCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 16,
     },
-    totalTitle: {
-      color: colors.textMuted,
-      fontSize: 14,
-      fontWeight: '700',
-      textTransform: 'uppercase',
-    },
-    totalNumber: {
-      color: colors.primary,
-      fontSize: 42,
-      fontWeight: '800',
-      marginBottom: 20,
-    },
-    list: {
-      paddingBottom: 20,
-    },
+    featuredLabel: { color: colors.background, fontSize: 12, fontWeight: '700' },
+    featuredName: { color: colors.background, fontSize: 16, fontWeight: '800' },
+    list: { paddingBottom: 20 },
     card: {
       backgroundColor: colors.surface,
       borderRadius: 12,
@@ -95,46 +143,12 @@ export default function ProgressScreen() {
       borderWidth: 1,
       borderColor: colors.border,
     },
-    cardPressed: {
-      opacity: 0.85,
-      transform: [{ scale: 0.98 }],
-    },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 12,
-    },
-    cardTitle: {
-      color: colors.text,
-      fontSize: 18,
-      fontWeight: '700',
-    },
-    cardSubtitle: {
-      color: colors.primary,
-      fontSize: 14,
-      marginTop: 4,
-      fontWeight: '600',
-    },
-    barBg: {
-      height: 10,
-      backgroundColor: colors.border,
-      borderRadius: 5,
-      overflow: 'hidden',
-    },
-    barFill: {
-      height: '100%',
-      backgroundColor: colors.primary,
-    },
-    cardCount: {
-      color: colors.textMuted,
-      fontSize: 13,
-      marginTop: 8,
-    },
-    empty: {
-      color: colors.textMuted,
-      textAlign: 'center',
-      marginTop: 40,
-      fontSize: 16,
-    },
+    cardPressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
+    cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    cardTitle: { color: colors.text, fontSize: 18, fontWeight: '700' },
+    cardSubtitle: { color: colors.primary, fontSize: 14, marginTop: 4, fontWeight: '600' },
+    barBg: { height: 10, backgroundColor: colors.border, borderRadius: 5, overflow: 'hidden' },
+    barFill: { height: '100%', backgroundColor: colors.primary },
+    cardCount: { color: colors.textMuted, fontSize: 13, marginTop: 8 },
+    empty: { color: colors.textMuted, textAlign: 'center', marginTop: 40, fontSize: 16 },
   });

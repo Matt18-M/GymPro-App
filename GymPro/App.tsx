@@ -3,10 +3,11 @@ import 'react-native-gesture-handler';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import { ActivityIndicator, View } from 'react-native';
 import DrawerNavigator from './src/navigators/DrawerNavigator';
 import RoutineDetailScreen from './src/screens/RoutineDetailScreen';
 import AddRoutineScreen from './src/screens/AddRoutineScreen';
-import { RoutineProvider } from './src/context/RoutineContext';
+import { RoutineProvider, useRoutines } from './src/context/RoutineContext';
 import { colors } from './src/theme';
 
 export type RootStackParamList = {
@@ -17,30 +18,33 @@ export type RootStackParamList = {
 
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
+  function RootNavigator() {
+    const { isLoading } = useRoutines();
+
+    if (isLoading) {
+      return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      );
+    }
+
+    return (
+      <NavigationContainer theme={navTheme}>
+        <StatusBar style="light" />
+        <Stack.Navigator>
+          <Stack.Screen name="DrawerRoot" component={DrawerNavigator} options={drawerRootOptions} />
+          <Stack.Screen name="RoutineDetail" component={RoutineDetailScreen} options={routineDetailOptions} />
+          <Stack.Screen name="AddRoutine" component={AddRoutineScreen} options={addRoutineOptions} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
   export default function App() {
     return (
       <RoutineProvider>
-        <NavigationContainer theme={navTheme}>
-          <StatusBar style="light" />
-
-          <Stack.Navigator>
-            <Stack.Screen
-              name="DrawerRoot"
-              component={DrawerNavigator}
-              options={drawerRootOptions}
-            />
-            <Stack.Screen
-              name="RoutineDetail"
-              component={RoutineDetailScreen}
-              options={routineDetailOptions}
-            />
-            <Stack.Screen
-              name="AddRoutine"
-              component={AddRoutineScreen}
-              options={addRoutineOptions}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <RootNavigator />
       </RoutineProvider>
     );
   }
@@ -64,24 +68,14 @@ export type RootStackParamList = {
 
   const routineDetailOptions = {
     title: 'Detalle de Rutina',
-    headerStyle: {
-      backgroundColor: colors.surface,
-    },
+    headerStyle: { backgroundColor: colors.surface },
     headerTintColor: colors.primary,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-      color: colors.text,
-    },
+    headerTitleStyle: { fontWeight: '700' as const, color: colors.text },
   };
 
   const addRoutineOptions = {
     title: 'Rutina',
-    headerStyle: {
-      backgroundColor: colors.surface,
-    },
+    headerStyle: { backgroundColor: colors.surface },
     headerTintColor: colors.primary,
-    headerTitleStyle: {
-      fontWeight: '700' as const,
-      color: colors.text,
-    },
+    headerTitleStyle: { fontWeight: '700' as const, color: colors.text },
   };
