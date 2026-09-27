@@ -67,10 +67,8 @@ Escanea el código QR con la app **Expo Go** (Android/iOS) o ejecuta en un emula
 | `npx expo start -c`   | Inicia limpiando la caché de Metro    |
 | `npx expo install`    | Instala dependencias compatibles      |
 
-## Videos de sustentación
 
-Los enlaces a los videos explicativos se encuentran en [`videos.txt`](./videos.txt).
 
 ## Autor
 
-Mateo Molina — Desarrollo de Aplicaciones Móviles
+Mateo Molina
