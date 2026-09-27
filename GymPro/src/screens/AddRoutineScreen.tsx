@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../App';
 import { useRoutines } from '../context/RoutineContext';
+import { MUSCLE_GROUPS, DAYS } from '../constants';
 import { colors } from '../theme';
 
 type AddRoutineRoute = RouteProp<RootStackParamList, 'AddRoutine'>;
@@ -17,6 +18,7 @@ export default function AddRoutineScreen() {
 
     const [name, setName] = useState('');
     const [muscleGroup, setMuscleGroup] = useState('');
+    const [day, setDay] = useState('');
     const [duration, setDuration] = useState('');
 
     const idToEdit = route.params?.routineId;
@@ -27,46 +29,48 @@ export default function AddRoutineScreen() {
         if (routine) {
             setName(routine.name);
             setMuscleGroup(routine.muscleGroup);
+            setDay(routine.day);
             setDuration(String(routine.duration));
     }
     } else {
         setName('');
         setMuscleGroup('');
+        setDay('');
         setDuration('');
     }
 }, [idToEdit]);
 
     const handleSave = () => {
-        if (!name.trim() || !muscleGroup.trim() || !duration.trim()) {
-        Alert.alert('Campos incompletos', 'Nombre, grupo muscular y duración son obligatorios');
+        if (!name.trim() || !muscleGroup || !day || !duration.trim()) {
+        Alert.alert('Campos incompletos', 'Nombre, grupo muscular, día y duración son obligatorios');
         return;
         }
 
-        const parsedDuration = parseFloat(duration);
-        if (isNaN(parsedDuration)) {
+    const parsedDuration = parseFloat(duration);
+    if (isNaN(parsedDuration)) {
         Alert.alert('Duración inválida', 'Ingresa un número válido');
         return;
-        }
-
-        if (parsedDuration < 10 || parsedDuration > 180) {
+    }
+    if (parsedDuration < 10 || parsedDuration > 180) {
         Alert.alert('Duración fuera de rango', 'La duración debe estar entre 10 y 180 minutos');
         return;
-        }
+    }
 
-        const payload = {
+    const payload = {
         name: name.trim(),
-        muscleGroup: muscleGroup.trim(),
+        muscleGroup,
+        day,
         duration: String(parsedDuration),
         };
 
-        if (idToEdit) {
+    if (idToEdit) {
         updateRoutine(idToEdit, payload);
-        } else {
+    } else {
         addRoutine(payload);
-        }
+    }
 
-        navigation.goBack();
-    };
+    navigation.goBack();
+};
 
 return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -81,81 +85,92 @@ return (
             />
 
         <Text style={styles.label}>Grupo Muscular</Text>
-        <TextInput
-            style={styles.input}
-            value={muscleGroup}
-            onChangeText={setMuscleGroup}
-            placeholder="Ej: Pecho"
-            placeholderTextColor={colors.textMuted}
+        <View style={styles.chipRow}>
+            {MUSCLE_GROUPS.map((group) => (
+                <Pressable
+                key={group}
+                style={[styles.chip, muscleGroup === group && styles.chipActive]}
+                onPress={() => setMuscleGroup(group)}
+                >
+                <Text style={[styles.chipText, muscleGroup === group && styles.chipTextActive]}>
+                    {group}
+                </Text>
+                </Pressable>
+            ))}
+            </View>
+
+            <Text style={styles.label}>Día</Text>
+            <View style={styles.chipRow}>
+            {DAYS.map((d) => (
+                <Pressable
+                key={d}
+                style={[styles.chip, day === d && styles.chipActive]}
+                onPress={() => setDay(d)}
+                >
+                <Text style={[styles.chipText, day === d && styles.chipTextActive]}>{d}</Text>
+                </Pressable>
+            ))}
+            </View>
+
+            <Text style={styles.label}>Duración (min)</Text>
+            <TextInput
+                style={styles.input}
+                value={duration}
+                onChangeText={setDuration}
+                placeholder="Ej: 60"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="numeric"
                 />
 
-        <Text style={styles.label}>Duración (min)</Text>
-        <TextInput
-            style={styles.input}
-            value={duration}
-            onChangeText={setDuration}
-            placeholder="Ej: 60"
-            placeholderTextColor={colors.textMuted}
-            keyboardType="numeric"
-            />
+            <Pressable
+            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+            onPress={handleSave}
+            >
+                <Text style={styles.buttonText}>
+                    {idToEdit ? 'Actualizar rutina' : 'Agregar rutina'}
+                </Text>
+                </Pressable>
+            </View>
+        </SafeAreaView>
+    );
+    }
 
-        <Pressable
-        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-        onPress={handleSave}
-        >
-            <Text style={styles.buttonText}>
-                {idToEdit ? 'Actualizar rutina' : 'Agregar rutina'}
-            </Text>
-            </Pressable>
-        </View>
-    </SafeAreaView>
-);
-}
-
-const styles = StyleSheet.create({
-    safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-},
-    container: {
-    flex: 1,
-    padding: 24,
-},
-    label: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 8,
-    marginTop: 16,
-},
-    input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    color: colors.text,
-    fontSize: 16,
-},
-    button: {
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: colors.primaryDark,
-    marginTop: 32,
-    alignItems: 'center',
-},
-    buttonPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-},
-        buttonText: {
-        color: colors.background,
+    const styles = StyleSheet.create({
+        safe: { flex: 1, backgroundColor: colors.background },
+        container: { flex: 1, padding: 24 },
+        label: { color: colors.text, fontSize: 14, fontWeight: '700', marginBottom: 8, marginTop: 16 },
+        input: {
+        backgroundColor: colors.surface,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: 10,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        color: colors.text,
         fontSize: 16,
-        fontWeight: '800',
-        letterSpacing: 0.5,
     },
-});
+        chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+        chip: {
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.surface,
+        },
+        chipActive: { backgroundColor: colors.primary, borderColor: colors.primaryDark },
+        chipText: { color: colors.textMuted, fontWeight: '600', fontSize: 13 },
+        chipTextActive: { color: colors.background },
+        button: {
+        backgroundColor: colors.primary,
+        paddingVertical: 14,
+        paddingHorizontal: 28,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: colors.primaryDark,
+        marginTop: 32,
+        alignItems: 'center',
+    },
+        buttonPressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
+        buttonText: { color: colors.background, fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
+    });

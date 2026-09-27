@@ -3,15 +3,15 @@ import 'react-native-gesture-handler';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View } from 'react-native';
-import DrawerNavigator from './src/navigators/DrawerNavigator';
+import { ActivityIndicator, Image, View } from 'react-native';
+import TabNavigator from './src/navigators/TabNavigator';
 import RoutineDetailScreen from './src/screens/RoutineDetailScreen';
 import AddRoutineScreen from './src/screens/AddRoutineScreen';
 import { RoutineProvider, useRoutines } from './src/context/RoutineContext';
 import { colors } from './src/theme';
 
 export type RootStackParamList = {
-    DrawerRoot: undefined;
+    TabRoot: undefined;
     RoutineDetail: { id: string };
     AddRoutine: { routineId?: string };
   };
@@ -33,7 +33,7 @@ export type RootStackParamList = {
       <NavigationContainer theme={navTheme}>
         <StatusBar style="light" />
         <Stack.Navigator>
-          <Stack.Screen name="DrawerRoot" component={DrawerNavigator} options={drawerRootOptions} />
+          <Stack.Screen name="TabRoot" component={TabNavigator} options={tabRootOptions} />
           <Stack.Screen name="RoutineDetail" component={RoutineDetailScreen} options={routineDetailOptions} />
           <Stack.Screen name="AddRoutine" component={AddRoutineScreen} options={addRoutineOptions} />
         </Stack.Navigator>
@@ -61,9 +61,14 @@ export type RootStackParamList = {
     },
   };
 
-  const drawerRootOptions = {
+  const tabRootOptions = {
     headerShown: true as const,
-    title: "Mateo Molina"
+    headerTitle: () => (
+      <Image
+        source={require('./assets/gym.jpg')}
+        style={{ width: 120, height: 36, resizeMode: 'contain' as const, borderRadius: 6 }}
+      />
+    ),
   };
 
   const routineDetailOptions = {

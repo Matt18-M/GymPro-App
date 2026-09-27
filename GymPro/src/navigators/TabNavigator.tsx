@@ -45,7 +45,7 @@ const tabScreenOptions = {
 };
 
 const progresoOptions = {
-  title: "Progreso",
+  title: "Inicio",
   tabBarIcon: ({ color, size }: { color: string; size: number }) => (
     <Ionicons 
     name="stats-chart" 

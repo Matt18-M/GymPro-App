@@ -9,9 +9,9 @@ import {
     setFeaturedInDb,
     } from '../database/db';
 
-export const COMPLETED_LIMIT = 5;
+    export const COMPLETED_LIMIT = 5;
 
-export type Routine = {
+    export type Routine = {
     id: string;
     name: string;
     muscleGroup: string;
@@ -19,13 +19,14 @@ export type Routine = {
     createdAt: string;
     completedCount: number;
     featured: boolean;
+    day: string;
     };
 
-type RoutineInput = Omit<Routine, 'id' | 'createdAt' | 'duration' | 'completedCount' | 'featured'> & {
+    type RoutineInput = Omit<Routine, 'id' | 'createdAt' | 'duration' | 'completedCount' | 'featured'> & {
     duration: string;
     };
 
-type RoutineContextType = {
+    type RoutineContextType = {
     routines: Routine[];
     isLoading: boolean;
     addRoutine: (routine: RoutineInput) => void;
@@ -35,15 +36,15 @@ type RoutineContextType = {
     setFeaturedRoutine: (id: string) => void;
     };
 
-const SEED_ROUTINES: Routine[] = [
-    { id: '1', name: 'Pecho y Tríceps', muscleGroup: 'Pecho', duration: 60, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false },
-    { id: '2', name: 'Espalda y Bíceps', muscleGroup: 'Espalda', duration: 50, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false },
-    { id: '3', name: 'Pierna Completa', muscleGroup: 'Piernas', duration: 75, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false },
+    const SEED_ROUTINES: Routine[] = [
+    { id: '1', name: 'Pecho y Tríceps', muscleGroup: 'Pecho', duration: 60, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false, day: 'Lunes' },
+    { id: '2', name: 'Espalda y Bíceps', muscleGroup: 'Espalda', duration: 50, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false, day: 'Miércoles' },
+    { id: '3', name: 'Pierna Completa', muscleGroup: 'Piernas', duration: 75, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false, day: 'Viernes' },
     ];
 
-const RoutineContext = createContext<RoutineContextType | undefined>(undefined);
+    const RoutineContext = createContext<RoutineContextType | undefined>(undefined);
 
-export function RoutineProvider({ children }: { children: ReactNode }) {
+    export function RoutineProvider({ children }: { children: ReactNode }) {
     const [routines, setRoutines] = useState<Routine[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 

@@ -50,6 +50,8 @@ export default function RoutineDetailScreen() {
 
           <Text style={styles.name}>{routine.name}</Text>
           <Text style={styles.muscleGroup}>{routine.muscleGroup}</Text>
+          <Text style={styles.muscleGroup}>{routine.muscleGroup}</Text>
+          <Text style={styles.dayText}>{routine.day}</Text>
           <Text style={styles.duration}>{routine.duration} mins</Text>
           <Text style={styles.createdAt}>Creada el {routine.createdAt}</Text>
           <Text style={styles.completed}>
@@ -131,4 +133,12 @@ export default function RoutineDetailScreen() {
     buttonDisabled: { opacity: 0.5 },
     buttonPressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
     buttonText: { color: colors.background, fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
+  
+    dayText: {
+  color: colors.textMuted,
+  fontSize: 15,
+  fontWeight: '600',
+  marginTop: 4,
+  },
   });
+  

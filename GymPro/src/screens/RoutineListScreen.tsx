@@ -1,13 +1,14 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../App';
 import { Routine, useRoutines } from '../context/RoutineContext';
+import { MUSCLE_GROUPS, DAYS } from '../constants';
 import { colors } from '../theme';
 
-const MUSCLE_GROUPS = ['Todos', 'Pecho', 'Espalda', 'Piernas'];
+const FILTER_OPTIONS = ['Todos', ...MUSCLE_GROUPS];
 
 export default function RoutineListScreen() {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -16,6 +17,13 @@ export default function RoutineListScreen() {
 
     const filteredRoutines =
       filter === 'Todos' ? routines : routines.filter((r) => r.muscleGroup === filter);
+
+    const sections = DAYS
+      .map((day) => ({
+        title: day,
+        data: filteredRoutines.filter((r) => r.day === day),
+      }))
+      .filter((section) => section.data.length > 0);
 
     const handleDelete = (id: string) => {
       Alert.alert('Eliminar rutina', '¿Estás seguro?', [
@@ -61,7 +69,7 @@ export default function RoutineListScreen() {
       <SafeAreaView style={styles.safe} edges={['bottom']}>
         <View style={styles.container}>
           <View style={styles.filterRow}>
-            {MUSCLE_GROUPS.map((group) => (
+            {FILTER_OPTIONS.map((group) => (
               <Pressable
                 key={group}
                 style={[styles.filterChip, filter === group && styles.filterChipActive]}
@@ -74,11 +82,15 @@ export default function RoutineListScreen() {
             ))}
           </View>
 
-          <FlatList
-            data={filteredRoutines}
+          <SectionList
+            sections={sections}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
+            renderSectionHeader={({ section }) => (
+              <Text style={styles.sectionHeader}>{section.title}</Text>
+            )}
             contentContainerStyle={styles.list}
+            stickySectionHeadersEnabled={false}
             ListEmptyComponent={<Text style={styles.empty}>No hay rutinas todavía</Text>}
           />
 
@@ -109,6 +121,14 @@ export default function RoutineListScreen() {
     filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primaryDark },
     filterChipText: { color: colors.textMuted, fontWeight: '600', fontSize: 13 },
     filterChipTextActive: { color: colors.background },
+    sectionHeader: {
+      color: colors.primary,
+      fontSize: 14,
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      marginTop: 12,
+      marginBottom: 8,
+    },
     list: { paddingBottom: 100 },
     card: {
       backgroundColor: colors.surface,
