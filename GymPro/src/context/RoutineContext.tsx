@@ -33,9 +33,9 @@ import {
     updateRoutine: (id: string, routine: RoutineInput) => void;
     deleteRoutine: (id: string) => void;
     completeRoutine: (id: string) => void;
+    resetRoutine: (id: string) => void;
     setFeaturedRoutine: (id: string) => void;
     };
-
     const SEED_ROUTINES: Routine[] = [
     { id: '1', name: 'Pecho y Tríceps', muscleGroup: 'Pecho', duration: 60, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false, day: 'Lunes' },
     { id: '2', name: 'Espalda y Bíceps', muscleGroup: 'Espalda', duration: 50, createdAt: new Date().toLocaleString(), completedCount: 0, featured: false, day: 'Miércoles' },
@@ -105,6 +105,15 @@ import {
         setRoutines((prev) => prev.map((r) => (r.id === id ? newRoutine : r)));
     };
 
+    const resetRoutine = async (id: string) => {
+        const current = routines.find((r) => r.id === id);
+        if (!current) return;
+
+        const newRoutine = { ...current, completedCount: 0 };
+        await updateRoutineDb(newRoutine);
+        setRoutines((prev) => prev.map((r) => (r.id === id ? newRoutine : r)));
+    };
+
     const setFeaturedRoutine = async (id: string) => {
         await clearFeaturedInDb();
         await setFeaturedInDb(id);
@@ -113,7 +122,7 @@ import {
 
     return (
         <RoutineContext.Provider
-        value={{ routines, isLoading, addRoutine, updateRoutine, deleteRoutine, completeRoutine, setFeaturedRoutine }}
+        value={{ routines, isLoading, addRoutine, updateRoutine, deleteRoutine, completeRoutine, resetRoutine, setFeaturedRoutine }}
         >
         {children}
         </RoutineContext.Provider>

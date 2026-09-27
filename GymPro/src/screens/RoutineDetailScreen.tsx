@@ -10,7 +10,7 @@ type RoutineDetailRoute = RouteProp<RootStackParamList, 'RoutineDetail'>;
 
 export default function RoutineDetailScreen() {
     const route = useRoute<RoutineDetailRoute>();
-    const { routines, completeRoutine, setFeaturedRoutine } = useRoutines();
+    const { routines, completeRoutine, resetRoutine, setFeaturedRoutine } = useRoutines();
 
     const routine = routines.find((r) => r.id === route.params.id);
 
@@ -34,6 +34,17 @@ export default function RoutineDetailScreen() {
       completeRoutine(routine.id);
     };
 
+    const handleReset = () => {
+      Alert.alert(
+        'Reiniciar progreso',
+        '¿Seguro que quieres reiniciar el progreso de esta rutina a 0?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Reiniciar', style: 'destructive', onPress: () => resetRoutine(routine.id) },
+        ]
+      );
+    };
+
     const handleFeature = () => {
       setFeaturedRoutine(routine.id);
     };
@@ -49,7 +60,6 @@ export default function RoutineDetailScreen() {
           )}
 
           <Text style={styles.name}>{routine.name}</Text>
-          <Text style={styles.muscleGroup}>{routine.muscleGroup}</Text>
           <Text style={styles.muscleGroup}>{routine.muscleGroup}</Text>
           <Text style={styles.dayText}>{routine.day}</Text>
           <Text style={styles.duration}>{routine.duration} mins</Text>
@@ -75,6 +85,20 @@ export default function RoutineDetailScreen() {
               {isComplete ? 'Meta alcanzada' : 'Marcar como completada'}
             </Text>
           </Pressable>
+
+          {isComplete && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.resetButton,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={handleReset}
+            >
+              <Ionicons name="refresh-outline" size={22} color={colors.background} />
+              <Text style={styles.buttonText}>Reiniciar progreso</Text>
+            </Pressable>
+          )}
 
           <Pressable
             style={({ pressed }) => [
@@ -112,6 +136,7 @@ export default function RoutineDetailScreen() {
     featuredBadgeText: { color: colors.background, fontWeight: '700', fontSize: 12 },
     name: { color: colors.text, fontSize: 32, fontWeight: '800', textAlign: 'center' },
     muscleGroup: { color: colors.primary, fontSize: 22, fontWeight: '700', marginTop: 16 },
+    dayText: { color: colors.textMuted, fontSize: 15, fontWeight: '600', marginTop: 4 },
     duration: { color: colors.text, fontSize: 20, fontWeight: '600', marginTop: 12 },
     createdAt: { color: colors.textMuted, fontSize: 14, marginTop: 24 },
     completed: { color: colors.text, fontSize: 16, fontWeight: '700', marginTop: 12 },
@@ -123,22 +148,15 @@ export default function RoutineDetailScreen() {
       borderRadius: 10,
       borderWidth: 2,
       borderColor: colors.primaryDark,
-      marginTop: 20,
+      marginTop: 16,
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row',
       gap: 8,
     },
+    resetButton: { backgroundColor: '#B3261E', borderColor: '#7A1A14' },
     featureButton: { backgroundColor: colors.primaryDark },
     buttonDisabled: { opacity: 0.5 },
     buttonPressed: { opacity: 0.85, transform: [{ scale: 0.98 }] },
     buttonText: { color: colors.background, fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
-  
-    dayText: {
-  color: colors.textMuted,
-  fontSize: 15,
-  fontWeight: '600',
-  marginTop: 4,
-  },
   });
-  
